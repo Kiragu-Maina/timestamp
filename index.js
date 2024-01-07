@@ -45,7 +45,7 @@ app.get("/api/hello", function (req, res) {
 app.get("/api/:timestamp?", function (req, res) {
   if (!req.params.timestamp) {
     const now = new Date(); 
-    const unixTime = Math.floor(now.getTime() / 1000);
+    const unixTime = now.getTime(); // Unix timestamp in milliseconds
     const customFormat = format(now, "EEE, dd MMM yyyy HH:mm:ss 'GMT'", { timeZone: 'GMT' });
 
     return res.json({ unix: unixTime, utc: customFormat });
@@ -78,6 +78,6 @@ app.get("/api/:timestamp?", function (req, res) {
   res.json({ unix: unixTime, utc: customFormat });
 });
 // listen for requests :)
-var listener = app.listen(process.env.PORT || 3000, function () {
+var listener = app.listen(process.env.PORT || 4000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
