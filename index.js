@@ -9,8 +9,9 @@ const { format } = require('date-fns');
 var app = express();
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC 
+// so that your API is remotely testable by FCC
 var cors = require('cors');
+const { unix } = require('moment');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -26,27 +27,36 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
-// your first API endpoint... 
-app.get("/api/2015-12-25", function (req, res) {
-  // const datestampParam = req.params.date;
+// your first API endpoint...
+// app.get("/api/:date", function (req, res) {
+//   // const datestampParam = req.params.date;
 
-  // Assuming datestampParam is in the format "YYYY-MM-DD"
-  const unixTime = Math.floor(new Date("2015-12-25").getTime() / 1000);
+//   // Assuming datestampParam is in the format "YYYY-MM-DD"
+//   const unixTime = Math.floor(new Date("2015-12-25").getTime() / 1000);
 
-  const datenow = new Date(unixTime * 1000); // Convert seconds to milliseconds
+//   const datenow = new Date(unixTime * 1000); // Convert seconds to milliseconds
 
-  const customFormat = format(datenow, "EEE, dd MMM yyyy HH:mm:ss 'GMT'", { timeZone: 'GMT' });
+//   const customFormat = format(datenow, "EEE, dd MMM yyyy HH:mm:ss 'GMT'", { timeZone: 'GMT' });
 
-  console.log(datenow.toISOString());
-  res.json({ unix: unixTime, utc: customFormat });
-});
+//   console.log(datenow.toISOString());
+//   res.json({ unix: unixTime, utc: customFormat });
+// });
 
 app.get("/api/:timestamp", function (req, res) {
   const timestampParam = req.params.timestamp;
-  
   // Check if the parameter is a valid number
   if (isNaN(timestampParam)) {
-    return res.status(400).json({ error: 'Invalid timestamp' });
+    const unixTimes = Math.floor(new Date(timestampParam).getTime() / 1000);
+    const unixTime = parseInt(`${unixTimes}000`);  // Append three zeros to the Unix timestamp
+    console.log(unixTime)
+
+    const datenow = new Date(unixTime);
+
+    // Format the date using date-fns
+    const customFormat = format(datenow, "EEE, dd MMM yyyy HH:mm:ss 'GMT'", { timeZone: 'GMT' });
+
+    
+    return res.json({ unix: unixTime, utc: customFormat });
   }
 
   const unixTime = parseInt(timestampParam);
